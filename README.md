@@ -38,7 +38,7 @@ conda env remove -n phosformer
 **Notes on PyTorch:** The Phosformer model uses the PyTorch library which can benefit from GPU acceleration. You can monitor your GPU and check the your CUDA version by running `nvidia-smi -l 1`. PyTorch should always work on CPU, however additional steps may be required to enable CUDA, depending on your GPU model. For more information, see the installation guide on the [PyTorch website](https://pytorch.org/). 
 
 
-# Example code
+# How to generate predictions
 
 The section describes how to load Phosformer and use it for kinase-specific phosphosite predictions. Example code can be found in under `example.ipynb`. The computational notebook can be viewed using JupyterLab which is included in our environment. You can run it using `jupyter lab`.
 

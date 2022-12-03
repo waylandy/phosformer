@@ -1,13 +1,15 @@
 import sys
-import time 
+import time
 import warnings
+
 import numpy as np
 from scipy.special import softmax
 
 import torch
 
 def batch_job(kinases, substrates, model=None, tokenizer=None, input_order='SK', output_hidden_states=False, output_attentions=False, batch_size=20, device='cpu', threads=1, verbose=False):
-
+    warnings.simplefilter(action='ignore', category=FutureWarning)
+    
     if not callable(model) or not callable(tokenizer):
         raise Exception('"model" and "tokenizer" must be provided as keyword arguments.')
 

@@ -42,9 +42,9 @@ conda env remove -n phosformer
 
 The section describes how to load Phosformer and use it for kinase-specific phosphosite predictions. Example code can be found in under `example.ipynb`. The computational notebook can be viewed using JupyterLab which is included in our environment. You can run it using `jupyter lab`.
 
-### Loading Phosformer
+### Step 1: Loading Phosformer
 
-The section describes how to load the model and tokenizer. If this is your first time running Phosformer, the model will automatically be downloaded from Hugging Face Hub and cached for subsequent uses.
+The section describes how to load the model and tokenizer. If this is your first time running Phosformer, the model will automatically be downloaded from HuggingFace Hub and cached for subsequent uses.
 
 ```
 import Phosformer
@@ -61,7 +61,7 @@ tokenizer = Phosformer.RobertaTokenizer.from_pretrained('waylandy/phosformer', u
 model.eval()
 ```
 
-### Running predictions on kinase-peptide pairs
+### Step 2: Running predictions from kinase-peptide pairs
 
 Phosformer generates predictions based on **two inputs**:
 
@@ -83,14 +83,17 @@ For each pair of inputs, Phosformer generates **one output**:
 
 Unlike previous methods in phosphosite prediction, Phosformer does not utilize kinase or substrate labels as input. Phosformer's understanding of the kinase and substrate is based soley off of primary sequence information. Consequently the Phosformer architecture is capable of representing any kinase-substrate combination — new labels do not need to be added to accommodate the addition of new kinases.
 
-Here is a basic example showing how to run a single prediction.
+Here is a basic example showing how to run a single prediction using ERK2 kinase domain (UniProt: P28482).
 
 ```
-# Example prediction using ERK2 kinase domain (UniProt: P28482)
-kinase  = 'YTNLSYIGEGAYGMVCSAYDNVNKVRVAIKKISPFEHQTYCQRTLREIKILLRFRHENIIGINDIIRAPTIEQMKDVYIVQDLMETDLYKLLKTQHLSNDHICYFLYQILRGLKYIHSANVLHRDLKPSNLLLNTTCDLKICDFGLARVADPDHDHTGFLTEYVATRWYRAPEIMLNSKGYTKSIDIWSVGCILAEMLSNRPIFPGKHYLDQLNHILGILGSPSQEDLNCIINLKARNYLLSLPHKNKVPWNRLFPNADSKALDLLDKMLTFNPHKRIEVEQALAHPYL'
-peptide = 'LLKLASPELER'
+# Provide the kinase domain sequence 
+kinase_sequence  = 'YTNLSYIGEGAYGMVCSAYDNVNKVRVAIKKISPFEHQTYCQRTLREIKILLRFRHENIIGINDIIRAPTIEQMKDVYIVQDLMETDLYKLLKTQHLSNDHICYFLYQILRGLKYIHSANVLHRDLKPSNLLLNTTCDLKICDFGLARVADPDHDHTGFLTEYVATRWYRAPEIMLNSKGYTKSIDIWSVGCILAEMLSNRPIFPGKHYLDQLNHILGILGSPSQEDLNCIINLKARNYLLSLPHKNKVPWNRLFPNADSKALDLLDKMLTFNPHKRIEVEQALAHPYL'
 
-Phosformer.predict_one(kinase, peptide, model=model, tokenizer=tokenizer)
+# Provide the peptide sequence
+peptide_sequence = 'LLKLASPELER'
+
+# Run the prediction
+Phosformer.predict_one(kinase_sequence, peptide_sequence, model=model, tokenizer=tokenizer)
 ```
 
 Here is the same example, except the kinase domain sequence is retrieved from an included csv file.
@@ -98,11 +101,16 @@ Here is the same example, except the kinase domain sequence is retrieved from an
 ```
 import pandas as pd
 
-kinases       = pd.read_csv('data/human_kinases.csv')
-kinase_domain = kinases[kinases['uniprot']=='P28482']['sequence'].item()
-peptide       = 'LLKLASPELER'
+# Load the included csv file containing kinase domain sequences
+kinase_csv       = pd.read_csv('data/human_kinases.csv')
+# Retrieve the kinase domain sequence from the csv based on UniProt
+kinase_sequence  = kinase_csv[kinase_csv['uniprot']=='P28482']['sequence'].item()
 
-Phosformer.predict_one(kinase_domain, peptide, model=model, tokenizer=tokenizer)
+# Provide the peptide sequence
+peptide_sequence = 'LLKLASPELER'
+
+# Run the prediction
+Phosformer.predict_one(kinase_sequence, peptide_sequence, model=model, tokenizer=tokenizer)
 ```
 
 Here is a basic example showing how to run a single prediction.
@@ -110,19 +118,18 @@ Here is a basic example showing how to run a single prediction.
 ```
 import pandas as pd
 
-kinases       = pd.read_csv('data/example_input.csv')
-kinase_list   = kinases['kinase domain sequence'].values
-peptide_list  = kinases['peptide sequence'].values
+kinases                 = pd.read_csv('data/example_input.csv')
+kinase_sequences_list   = kinases['kinase domain sequence'].values
+peptide_sequences_list  = kinases['peptide sequence'].values
 
 Phosformer.predict_many(
-    kinase_list, peptide_list,
-    model=model, tokenizer=tokenizer,
+    kinase_sequences_list,
+    peptide_sequences_list,
+    model=model,
+    tokenizer=tokenizer,
     batch_size=20, # how many samples to load at once, if you're running out of memory, you can set this number lower
     device='cpu',  # either "cpu" or "cuda"
     threads=1      # specify how many threads to use, can help speed up if running on cpu
 )
 ```
-
-
-
 

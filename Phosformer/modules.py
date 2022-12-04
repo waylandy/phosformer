@@ -8,10 +8,44 @@ from scipy.special import softmax
 import torch
 
 def batch_job(kinases, substrates, model=None, tokenizer=None, input_order='SK', output_hidden_states=False, output_attentions=False, batch_size=20, device='cpu', threads=1, verbose=False):
+    """
+    Parameters
+    ----------
+    kinases : list of str
+        protein kinase domain sequences
+    substrates : list of str
+        11-mer peptide sequences
+    model :  PreTrainedModel
+        The pre-loaded Phosformer model.
+    tokenizer : Tokenizer
+        The pre-loaded Phosformer tokenizer.
+    input_order : str, default='SK'
+        The order to provide the sequence input. "S" stands for substrate
+        and "K" stands for kinase. The default, "SK" makes it such that the
+        substrate comes first, then the kinase. Do not change this parameter.
+    output_hidden_states : bool, default=False
+        If true, includes the final layer embedding vector in the output.
+    output_attentions : bool, default=False
+        If true, includes the final layer attention matrix in the output.
+    batch_size : int, default=20
+        Batch size for running predictions.
+    device : str, default='cpu'
+        Torch device for running predictions. Options may include "cpu", 
+        "cuda", "cuda:0", etc.
+    threads : int, default=1
+        Torch threads for running predictions.
+    verbose : bool, default=False
+        If true, reports progress in stderr.
+    
+    Yields
+    ------
+    output : dict
+        Contains prediction results and other additional requested outputs.
+    """
     warnings.simplefilter(action='ignore', category=FutureWarning)
     
     if not callable(model) or not callable(tokenizer):
-        raise Exception('"model" and "tokenizer" must be provided as keyword arguments.')
+        raise Exception('Please provide the pre-loaded Phosformer "model" and "tokenizer".')
 
     torch.set_num_threads = threads
     torch.cuda.empty_cache()
@@ -97,6 +131,20 @@ def batch_job(kinases, substrates, model=None, tokenizer=None, input_order='SK',
         sys.stderr.write('\n')
 
 def predict_one(kinase, substrate, **kwargs):
+    """
+    Parameters
+    ----------
+    kinase : str
+        a single protein kinase domain sequence
+    substrate : str
+        a single 11-mer peptide sequence
+    **kwargs : `batch_job` parameters
+
+    Returns
+    -------
+    output : float
+        prediction value
+    """
     kinase_allowed = {'A','R','N','D','C','Q','E','G','H','I','L','K','M','F','P','S','T','W','Y','V'}
     substrate_allowed = {'A','R','N','D','C','Q','E','G','H','I','L','K','M','F','P','S','T','W','Y','V','-'}
     phosphosite_allowed = {'S','T','Y'}
@@ -112,6 +160,20 @@ def predict_one(kinase, substrate, **kwargs):
     return next(batch_job([kinase], [substrate], **kwargs))['pred']
 
 def predict_many(kinases, substrates, **kwargs):
+    """
+    Parameters
+    ----------
+    kinase : list of str
+        a list of protein kinase domain sequences
+    substrate : list of str
+        a list of 11-mer peptide sequences
+    **kwargs : `batch_job` parameters
+
+    Returns
+    -------
+    output : np.ndarray
+        prediction values
+    """
     kinase_allowed = {'A','R','N','D','C','Q','E','G','H','I','L','K','M','F','P','S','T','W','Y','V'}
     substrate_allowed = {'A','R','N','D','C','Q','E','G','H','I','L','K','M','F','P','S','T','W','Y','V','-'}
     phosphosite_allowed = {'S','T','Y'}

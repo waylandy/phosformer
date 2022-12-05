@@ -49,13 +49,9 @@ The section describes how to load the model and tokenizer. If this is your first
 ```
 import Phosformer
 
-# authentication tokens are provided for reviewers
-# this will be removed upon acceptance & the model will be made fully public
-auth_token = "hf_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-
 # load Phosformer model and tokenizer
-model = Phosformer.RobertaForSequenceClassification.from_pretrained('waylandy/phosformer', use_auth_token=auth_token)
-tokenizer = Phosformer.RobertaTokenizer.from_pretrained('waylandy/phosformer', use_auth_token=auth_token)
+model = Phosformer.RobertaForSequenceClassification.from_pretrained('waylandy/phosformer')
+tokenizer = Phosformer.RobertaTokenizer.from_pretrained('waylandy/phosformer')
 
 # disables dropout for deterministic results
 model.eval()
@@ -69,7 +65,7 @@ Phosformer generates predictions based on **two inputs**:
     - must be a string composed of the 20 amino acid, in uppercase
     - the sequence should **not** contain gap characters
     - the sequence can be any length (although kinase domains are usually ~300 residues long)
-    - sequences for all human kinases can be found under `data/human_kinases.csv`
+    - sequences for all human kinases can be found under `data/reference_human_kinases.csv`
 2. a peptide sequence
     - must be a string composed of the 20 amino acid, in uppercase
     - must be exactly 11 residues long
@@ -102,7 +98,7 @@ Here is the same example, except the kinase domain sequence is retrieved from an
 import pandas as pd
 
 # Load the included csv file containing kinase domain sequences
-kinase_csv       = pd.read_csv('data/human_kinases.csv')
+kinase_csv       = pd.read_csv('data/reference_human_kinases.csv')
 # Retrieve the kinase domain sequence from the csv based on UniProt
 kinase_sequence  = kinase_csv[kinase_csv['uniprot']=='P28482']['sequence'].item()
 
@@ -118,7 +114,7 @@ Here is a basic example showing how to run a single prediction.
 ```
 import pandas as pd
 
-kinases                 = pd.read_csv('data/example_input.csv')
+kinases                 = pd.read_csv('data/example_input_peptide.csv')
 kinase_sequences_list   = kinases['kinase domain sequence'].values
 peptide_sequences_list  = kinases['peptide sequence'].values
 

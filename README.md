@@ -67,8 +67,8 @@ Phosformer generates predictions based on **two inputs**:
     - the sequence can be any length (although kinase domains are usually ~300 residues long)
     - sequences for all human kinases can be found under `data/reference_human_kinases.csv`
 2. a peptide sequence
-    - must be a string composed of the 20 amino acid, in uppercase
-    - must be exactly 11 residues long
+    - must be a string that is exactly 11 characters (residues) long 
+    - the string must be composed of the 20 amino acid characters, in uppercase
     - the center residue is defined as the potential phosphosite and must be either S, T, or Y
     - if the potential phosphosite occurs within 5 residues of the N or C-terminal, pad the sequence with gap characters
 
@@ -109,16 +109,20 @@ peptide_sequence = 'LLKLASPELER'
 Phosformer.predict_one(kinase_sequence, peptide_sequence, model=model, tokenizer=tokenizer)
 ```
 
-Here is a basic example showing how to run a single prediction.
+Here is a more complex example showing which shows how run predictions from a csv file.
 
 ```
 import pandas as pd
 
+# load the example dataset
 kinases                 = pd.read_csv('data/example_input_peptide.csv')
+
+# only these two columns are needed to make predictions
 kinase_sequences_list   = kinases['kinase domain sequence'].values
 peptide_sequences_list  = kinases['peptide sequence'].values
 
-Phosformer.predict_many(
+# make predictions
+predictions = Phosformer.predict_many(
     kinase_sequences_list,
     peptide_sequences_list,
     model=model,
@@ -127,5 +131,14 @@ Phosformer.predict_many(
     device='cpu',  # either "cpu" or "cuda"
     threads=1      # specify how many threads to use, can help speed up if running on cpu
 )
+
+# add predictions to the dataset
+kinases['score'] = predictions
+kinases['prediction'] = ['Yes' if i >= 0.5 else 'No' for i in predictions]
+
+# save the results into a new table
+results = kinases[['kinase name','peptide sequence','score','prediction']]
+# results.to_csv('output.csv', index=False) # uncomment this line if you want to save results
+display(results)
 ```
 

@@ -142,3 +142,8 @@ results = kinases[['kinase name','peptide sequence','score','prediction']]
 display(results)
 ```
 
+# Training data
+
+Our curated datasets for pre-training and fine-tuning can be downloaded from:
+
+https://www.dropbox.com/sh/4cc0ha1unme2rba/AABrgzXU4cJ4rb5SXg9BNt2wa?dl=0

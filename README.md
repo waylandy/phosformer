@@ -144,6 +144,7 @@ display(results)
 
 # Training data
 
-Our curated datasets for pre-training and fine-tuning can be downloaded from:
+Our curated datasets for pre-training and fine-tuning can be downloaded from huggingface hub:
 
-https://www.dropbox.com/sh/4cc0ha1unme2rba/AABrgzXU4cJ4rb5SXg9BNt2wa?dl=0
+https://huggingface.co/datasets/waylandy/phosformer_curated/tree/main
+

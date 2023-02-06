@@ -2,7 +2,7 @@
 
 This respository contains the code and dataset for:
 
-[**Phosformer: An explainable Transformer model for protein kinase-specific phosphorylation predictions.**](https://doi.org/10.1093/bioinformatics/btad046)\
+[**Phosformer: An explainable Transformer model for protein kinase-specific phosphorylation predictions.**](https://academic.oup.com/bioinformatics/article/39/2/btad046/7000331)\
 Zhongliang Zhou, Wayland Yeung, Nathan Gravel, Mariah Salcedo, Saber Soleymani, Sheng Li, Natarajan Kannan.\
 *Bioinformatics.* (2023)
 
